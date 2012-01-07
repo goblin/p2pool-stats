@@ -1,0 +1,5 @@
+This is a simple javascript page to display some p2pool stats.
+
+Edit your p2pool node's address at the top of the page, save it anywhere
+and just point your browser to it.
+

@@ -1,0 +1,53 @@
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+// PUT YOUR P2POOL SERVER'S ADDRESS HERE:
+var servaddr = 'http://10.0.1.210:9332';
+
+$(document).ajaxError(function(event, request, settings, err) {
+	alert("error: " + settings.url + ": " + err.message);
+});
+
+$.get(servaddr + '/rate', function(data) {
+	$('#hashrate').html(data / 1000000000);
+});
+$.getJSON(servaddr + '/payout_addr', function(addr) {
+	$('#payout').html(addr);
+	
+	$.getJSON(servaddr + '/current_payouts', function(pays) {
+		$('#amt').html(pays[addr]);
+	});
+});
+
+</script>
+</head>
+
+<body>
+<h1>p2pool stats</h1>
+<ul>
+	<li>
+		Total pool Ghash/sec: <span id="hashrate"></span>
+	</li>
+	<li>
+		My payout address: <span id="payout"></span>
+	</li>
+	<li>
+		Payout if block was found NOW: <span id="amt"></span> BTC
+	</li>
+	<li>
+		Recently found blocks: <br />
+		<table border="1">
+			<tr>
+				<th>time</th>
+				<th>hash</th>
+			</tr>
+			<tr>
+				<td colspan="2">not supported yet</td>
+			</tr>
+		</table>
+	</li>
+</ul>
+</body>
+</html>
