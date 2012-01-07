@@ -13,12 +13,26 @@ $(document).ajaxError(function(event, request, settings, err) {
 $.get(servaddr + '/rate', function(data) {
 	$('#hashrate').html(data / 1000000000);
 });
+
 $.getJSON(servaddr + '/payout_addr', function(addr) {
 	$('#payout').html(addr);
 	
 	$.getJSON(servaddr + '/current_payouts', function(pays) {
 		$('#amt').html(pays[addr]);
 	});
+});
+
+$.getJSON(servaddr + '/recent_blocks', function(blocks) {
+	for(i in blocks) {
+		var ts = new Date(1000 * blocks[i]['ts']);
+		var padded_hash = blocks[i]['hash'];
+		while(padded_hash.length < 64) {
+			padded_hash = '0' + padded_hash;
+		}
+		$('#blocks tr:last').after('<tr><td>' + ts.toString() + 
+			'</td><td><a href="http://blockexplorer.com/block/'
+			+ padded_hash + '">' + padded_hash + '</a></td></tr>');
+	}
 });
 
 </script>
@@ -38,13 +52,10 @@ $.getJSON(servaddr + '/payout_addr', function(addr) {
 	</li>
 	<li>
 		Recently found blocks: <br />
-		<table border="1">
+		<table border="1" id="blocks">
 			<tr>
 				<th>time</th>
 				<th>hash</th>
-			</tr>
-			<tr>
-				<td colspan="2">not supported yet</td>
 			</tr>
 		</table>
 	</li>
