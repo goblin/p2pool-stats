@@ -16,6 +16,7 @@ $.get(servaddr + '/rate', function(data) {
 
 $.getJSON(servaddr + '/current_payouts', function(pays) {
 	var arr = new Array;
+	var total = 0;
 	for(var i in pays) {
 		arr.push(i);
 	}
@@ -25,7 +26,9 @@ $.getJSON(servaddr + '/current_payouts', function(pays) {
 		addr = addr.replace(/^.*: /, "");
 		$('#payouts tr:last').after('<tr><td><a href="http://blockexplorer.com/address/' + addr + '">' + arr[j] + '</a></td><td>' +
 			pays[arr[j]] + '</td></tr>');
+		total += pays[arr[j]];
 	}
+	$('#payouts tr:last').after('<tr><td><b>Total:</b></td><td><b>' + total.toFixed(8) + '</b></td></tr>');
 });
 
 $.getJSON(servaddr + '/recent_blocks', function(blocks) {
