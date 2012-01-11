@@ -1,0 +1,73 @@
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+// PUT YOUR P2POOL SERVER'S ADDRESS HERE:
+var servaddr = 'http://p2pool.forre.st:9332';
+
+$(document).ajaxError(function(event, request, settings, err) {
+	alert("error: " + settings.url + ": " + err.message);
+});
+
+$.get(servaddr + '/rate', function(data) {
+	$('#hashrate').html(data / 1000000000);
+});
+
+$.getJSON(servaddr + '/current_payouts', function(pays) {
+	var arr = new Array;
+	for(var i in pays) {
+		arr.push(i);
+	}
+	arr.sort(function(a, b) { return (pays[b] - pays[a]); });
+	for(var j in arr) {
+		var addr = arr[j];
+		addr = addr.replace(/^.*: /, "");
+		$('#payouts tr:last').after('<tr><td><a href="http://blockexplorer.com/address/' + addr + '">' + arr[j] + '</a></td><td>' +
+			pays[arr[j]] + '</td></tr>');
+	}
+});
+
+$.getJSON(servaddr + '/recent_blocks', function(blocks) {
+	for(var i in blocks) {
+		var ts = new Date(1000 * blocks[i]['ts']);
+		var padded_hash = blocks[i]['hash'];
+		while(padded_hash.length < 64) {
+			padded_hash = '0' + padded_hash;
+		}
+		$('#blocks tr:last').after('<tr><td>' + ts.toString() + 
+			'</td><td><a href="http://blockexplorer.com/block/'
+			+ padded_hash + '">' + padded_hash + '</a></td></tr>');
+	}
+});
+
+</script>
+</head>
+
+<body>
+<h1>p2pool payouts if block found <em>now</em></h1>
+<ul>
+	<li>
+		Total pool Ghash/sec: <span id="hashrate"></span>
+	</li>
+	<li>
+		Payouts if block was found NOW: 
+		<table border="1" id="payouts">
+			<tr>
+				<th>address</th>
+				<th>amount in BTC</th>
+			</tr>
+		</table>
+	</li>
+	<li>
+		Recently found blocks (that this node still remembers): <br />
+		<table border="1" id="blocks">
+			<tr>
+				<th>time</th>
+				<th>hash</th>
+			</tr>
+		</table>
+	</li>
+</ul>
+</body>
+</html>
